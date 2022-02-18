@@ -66,10 +66,11 @@ if activation_function == 'Logistic (Sigmoid) Function':
         st.write('Notice that the derivative of the logistic function gets very close to zero for large positive and negative inputs.')
 
     st.subheader('Pros')
-    st.write('1. The logistic function introduces non-linearity into the network which allows it to solve more complex problems than linear activation functions.\n2. It is continuous, differentiable, and have non-zero derivatives everywhere.\n3. Because its output is between 0 and 1, it is very common to use in the output layer in binary classification problems.')
+    st.write('1. The logistic function introduces non-linearity into the network which allows it to solve more complex problems than linear activation functions.\n2. It is continuous and differentiable everywhere.\n3. Because its output is between 0 and 1, it is very common to use in the output layer in binary classification problems.')
 
     st.subheader('Cons')
-    st.write("1. Vanishing Gradients\nBecause the logistic function can get easily saturated with large inputs, its gradient gets very close to zero. This causes the gradients to get smaller and smaller as backpropagation progresses down to the lower layers of the network. Eventually, the lower layers' weights receive very small updates never converge to their optimal values.")
+    st.write("1. Limited Sensitivity\nThe logistic function saturates across most of its domain. It is only sensitive to inputs around its midpoint 0.5.")
+    st.write("2. Vanishing Gradients in Deep Neural Networks\nBecause the logistic function can get easily saturated with large inputs, its gradient gets very close to zero. This causes the gradients to get smaller and smaller as backpropagation progresses down to the lower layers of the network. Eventually, the lower layers' weights receive very small updates and never converge to their optimal values.")
 
 ## Tanh Function
 if activation_function == 'Hyperbolic Tangent (Tanh) Function':
@@ -106,7 +107,7 @@ if activation_function == 'Hyperbolic Tangent (Tanh) Function':
     st.write("1. The tanh function introduces non-linearity into the network which allows it to solve more complex problems than linear activation functions.\n2. It is continuous, differentiable, and have non-zero derivatives everywhere.\n3. Because its output value ranges from -1 to 1, that makes each layer's output more or less centered around 0 at the beginning of training, whcih speed up convergence.")
 
     st.subheader('Cons')
-    st.write("1. Vanishing Gradients\nBecause the tanh function can get easily saturated with large inputs, its gradient gets very close to zero. This causes the gradients to get smaller and smaller as backpropagation progresses down to the lower layers of the network. Eventually, the lower layers' weights receive very small updates never converge to their optimal values.")
+    st.write("1. Limited Sensitivity\nThe tanh function saturates across most of its domain. It is only sensitive to inputs around its midpoint 0.")
+    st.write("2. Vanishing Gradients in Deep Neural Networks\nBecause the tanh function can get easily saturated with large inputs, its gradient gets very close to zero. This causes the gradients to get smaller and smaller as backpropagation progresses down to the lower layers of the network. Eventually, the lower layers' weights receive very small updates and never converge to their optimal values.")
 
     st.markdown("**Note**: the vanishing gradient problem is less severe with the tanh function because it has a mean of 0 (instead of 0.5 like the logistic function).")
-
