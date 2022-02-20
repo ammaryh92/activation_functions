@@ -1,4 +1,3 @@
-from click import style
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
@@ -12,6 +11,9 @@ def derivative(f, z, eps=0.000001):
 
 def logistic(z):
     return 1 / (1 + np.exp(-z))
+
+def relu(z):
+    return np.maximum(0, z)
 
 def plot_function(func, title):
     fig = go.Figure()
@@ -44,7 +46,7 @@ if activation_function == 'Logistic (Sigmoid) Function':
     st.write('The output of the logistic (sigmoid) function is always between 0 and 1.')   
 
     st.subheader('Plot')
-    logistic_fig  = plot_function(logistic, title='The Logistic Activation Functoin')
+    logistic_fig  = plot_function(logistic, title='Logistic (Sigmoid) Activation Functoin')
     logistic_fig.add_annotation(x=7, y=1, text='<b>Saturation</b>', showarrow=True,
      font=dict(family="Montserrat", size=16, color="#1F8123"),
         align="center",arrowhead=2, arrowsize=1, arrowwidth=2, arrowcolor="#A835E1", ax=-20, ay=30,)
@@ -60,7 +62,7 @@ if activation_function == 'Logistic (Sigmoid) Function':
     st.subheader('Derivative')
     st.markdown(r'$sigmoid^{\prime}(z)=sigmoid(z)(1−sigmoid(z))$')
     st.text("")
-    logistic_der_fig = plot_function_derivative(logistic, title='The Derivative of the Logistic Function')
+    logistic_der_fig = plot_function_derivative(logistic, title='Derivative of the Logistic Function')
     st.plotly_chart(logistic_der_fig)
     with st.expander('Plot Explanation'):
         st.write('Notice that the derivative of the logistic function gets very close to zero for large positive and negative inputs.')
@@ -82,7 +84,7 @@ if activation_function == 'Hyperbolic Tangent (Tanh) Function':
     st.write('The range of the tanh function is between -1 and 1.')
 
     st.subheader('Plot')
-    tanh_fig = plot_function(np.tanh, title='The Hyperbolic Tangent Function')
+    tanh_fig = plot_function(np.tanh, title='Hyperbolic Tangent Function')
     tanh_fig.add_annotation(x=7, y=1, text='<b>Saturation</b>', showarrow=True,
      font=dict(family="Montserrat", size=16, color="#1F8123"),
         align="center",arrowhead=2, arrowsize=1, arrowwidth=2, arrowcolor="#A835E1", ax=-20, ay=30,)
@@ -98,7 +100,7 @@ if activation_function == 'Hyperbolic Tangent (Tanh) Function':
     st.subheader('Derivative')
     st.markdown(r'$tanh^{\prime}(z)= 1 - (tanh(z))^{2}$')
     st.text("")
-    tanh_der_fig = plot_function_derivative(np.tanh, title='The Derivative of the Tanh Function')
+    tanh_der_fig = plot_function_derivative(np.tanh, title='Derivative of the Tanh Function')
     st.plotly_chart(tanh_der_fig)
     with st.expander('Plot Explanation'):
         st.write('Notice that the derivative of the tanh function gets very close to zero for large positive and negative inputs.')
@@ -111,3 +113,33 @@ if activation_function == 'Hyperbolic Tangent (Tanh) Function':
     st.write("2. Vanishing Gradients in Deep Neural Networks\nBecause the tanh function can get easily saturated with large inputs, its gradient gets very close to zero. This causes the gradients to get smaller and smaller as backpropagation progresses down to the lower layers of the network. Eventually, the lower layers' weights receive very small updates and never converge to their optimal values.")
 
     st.markdown("**Note**: the vanishing gradient problem is less severe with the tanh function because it has a mean of 0 (instead of 0.5 like the logistic function).")
+
+## RelU
+if activation_function == 'ReLU Function':
+    st.header('Rectified Linear Unit (ReLU) Function')
+
+    st.subheader('Description')
+    st.write('It is a piecewise linear function with two linear pieces that will output the input directly is it is positive, otherwise, it will output zero.')
+    st.markdown('$$ReLU(z) = max(0, z)$$')
+    st.write('It has become the default activation function for many neural netowrks because it is easier to train and achieves better performance.')
+
+    st.subheader('Plot')
+    relu_fig = plot_function(relu, title = 'ReLU Function')
+    st.plotly_chart(relu_fig)
+
+    st.subheader('Derivative')
+    st.markdown(r'$$ Relu^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\0 & z<=0 \\\end{array}\right.$$')
+    st.text("")
+    relu_der_fig = plot_function_derivative(relu, title='Derivative of the ReLU Function')
+    st.plotly_chart(relu_der_fig)
+    with st.expander('Plot Explanation'):
+        st.write('- The derivative of the ReLU function is 1 for z > 0, and 0 for z < 0.')
+        st.write('- The ReLU function is not differentiable at z = 0.')
+
+    st.subheader('Pros')
+    st.write("1. Computationally Efficient\n- The ReLU function does not require a lot of computation (Unlike the logistic and the tanh function which include an exponential function).\n- Because the ReLU function mimics a linear function when the input is positive, it is very easy to optimize.")
+    st.write("2. Sparse Representaion\n- The ReLU function can output true zero values when the input is negative. This results in sparse weight matricies which help simplify the model architecure and speed up the learning process.\n- In contrast, the logistic and the tanh function always output non-zero values (sometimes the output is very close to zero, but not a true zero), which results in a dense representation.")
+    st.write("3. Avoid Vanishing Gradients\n- The ReLU function does not saturate for positive values which helps avoid the vanishing gradient problem.\n- Switching from the logistic (sigmoid) activation function to ReLU has helped revolutionize the field of deep learning.")
+
+    st.subheader('Cons')
+    st.write("1. Dying ReLUs\n- A problem where ReLU neurons become inactive and only output 0 for any input.\n- This usually happens when the weighted sum of the inputs for all training examples is negative, coupled with a large learning rate.\n- This causes the ReLU function to only output zeros and gradient descent algorithm can not affect it anymore.\n- One of the explanation of this phenomenon is using symmetirc weight distributions to initialize weights and biases.")
