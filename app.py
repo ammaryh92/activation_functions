@@ -41,7 +41,7 @@ def plot_function_derivative(func, title, alpha=None):
 
 st.title('Activation Functions')
 
-activation_function = st.selectbox('Choose an activation function', ['None', 'Logistic (Sigmoid) Function', 'Hyperbolic Tangent (Tanh) Function', 'ReLU Function', 'LeakyReLU Function'])
+activation_function = st.selectbox('Choose an activation function', ['None', 'Logistic (Sigmoid) Function', 'Hyperbolic Tangent (Tanh) Function', 'ReLU Function', 'LeakyReLU Function', 'Variants of LeakyReLU'])
 
 ## Logistic Function
 if activation_function == 'Logistic (Sigmoid) Function':
@@ -192,3 +192,13 @@ if activation_function == "LeakyReLU Function":
     st.subheader("Pros")
     st.write("1. Avoids the Dead ReLUs Problem\nBy allowing the function to have a small gradient when the input is negative, we ensure that the neuron never dies.")
     st.write("2. Better Performance\n The LeakyReLU function along with its variants almost always outperforms the standard ReLU.")
+
+## Variants of LeakyReLU
+if activation_function == 'Variants of LeakyReLU':
+    st.title("Randomized LeakyReLU (RReLU)")
+    st.write('In this variant, the value of α is picked randomly in a given range during training, and is fixed to an average during testing.')
+    st.write('In addition to having the same advantages of the LeakyReLU, it also has a slight regularization effect (reduce overfitting).')
+
+    st.title('Parametric LeakyReLU (PReLU)')
+    st.write('In this variant, the value of α is a trainable (learnable) parameter rather than a hyperparameter.')
+    st.write('In other words, the backpropagation algorithm can tweak its value like any other model parameter.')
