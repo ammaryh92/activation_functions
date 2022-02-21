@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
+from scipy.special import erfc
 
 ########################################
 # Utility Code
@@ -14,6 +15,16 @@ def logistic(z):
 
 def relu(z):
     return np.maximum(0, z)
+
+
+alpha_0_1 = -np.sqrt(2 / np.pi) / (erfc(1/np.sqrt(2)) * np.exp(1/2) - 1)
+scale_0_1 = (1 - erfc(1 / np.sqrt(2)) * np.sqrt(np.e)) * np.sqrt(2 * np.pi) * (2 * erfc(np.sqrt(2))*np.e**2 + np.pi*erfc(1/np.sqrt(2))**2*np.e - 2*(2+np.pi)*erfc(1/np.sqrt(2))*np.sqrt(np.e)+np.pi+2)**(-1/2)
+
+def elu(z, alpha=1):
+    return np.where(z < 0, alpha * (np.exp(z) - 1), z)
+
+def selu(z, scale=scale_0_1, alpha=alpha_0_1):
+    return scale * elu(z, alpha)
 
 def plot_function(func, title, alpha=None):
     fig = go.Figure()
@@ -41,7 +52,7 @@ def plot_function_derivative(func, title):
 
 st.title('Activation Functions')
 
-activation_function = st.selectbox('Choose an activation function', ['None', 'Logistic (Sigmoid) Function', 'Hyperbolic Tangent (Tanh) Function', 'ReLU Function', 'LeakyReLU Function', 'Variants of LeakyReLU', 'Exponential Linear Unit'])
+activation_function = st.selectbox('Choose an activation function', ['None', 'Logistic (Sigmoid) Function', 'Hyperbolic Tangent (Tanh) Function', 'ReLU Function', 'LeakyReLU Function', 'Variants of LeakyReLU', 'Exponential Linear Unit', 'SELU'])
 
 ## Logistic Function
 if activation_function == 'Logistic (Sigmoid) Function':
@@ -252,3 +263,50 @@ if activation_function == 'Exponential Linear Unit':
 
     st.subheader("Cons")
     st.write("1. Computationally Expensive\nBecause it uses the exponential function, the ELU is slower to compute than other variants of ReLU.")
+
+## SELU
+if activation_function == 'SELU':
+    st.title('Scaled ELU (SELU)')
+
+    st.subheader('Description')
+    st.write('The SELU function is a scaled variant of the ELU function.')
+
+    st.markdown(r'$$ SELU_{\alpha}(z)= {\lambda}\left\{\begin{array}{ll}z & z>0 \\{\alpha}(exp(z)-1) & z<=0 \\\end{array}\right.$$')
+
+    st.write("Under certain conditions, using the SELU function will cause the neural network to self-normalize.")
+
+    st.write("The values of λ and α are predetermined by the authors of the function and you do not need to tune them.")
+    st.write(r"$α {\approx} %f$"%alpha_0_1)
+    st.write(r"$λ {\approx} %f$"%scale_0_1)
+
+    st.subheader('Plot')
+    selu_fig = plot_function(selu, title='Scaled ELU (SELU) Function')
+    st.plotly_chart(selu_fig)
+
+    with st.expander('Plot Explanation'):
+        st.write("- If the input is positive, the function will return (λ * input).")
+        st.write("- Similar to LeakyReLU, the output of the  function is never a true zero for negative inputs, which helps avoid the dying ReLUs problem.")
+    
+    st.subheader("Derivative")
+    st.markdown(r'$$ SELU^{\prime}(z)= {\lambda}\left\{\begin{array}{ll}1 & z>0 \\{\alpha} * exp(z) & z<=0 \\\end{array}\right.$$')
+
+    st.text("")
+
+    selu_der_fig = plot_function_derivative(selu, title='Derivative of the SELU Function')
+    st.plotly_chart(selu_der_fig)
+
+    st.subheader("SELU\'s Self-Normalization Effect")
+    st.write("One of the major benefits of using the SELU activation function is that it will cause the network to self-normalize.\nIn other words, the output of each layer will maintain a mean of 0 and standard deviation of 1 (follow the standard normal distribution)")
+    st.write("However, for self-normalization to take place, there are certain conditions that need to be satisfied.")
+    st.markdown("**1. The network's architecure must be sequential**")
+    st.write("Self-normalization is not guaranteed for different architectures such as RNNs, or architectures with skip connections for example.")
+    st.write("**2. The network parameters must be initialized using \"LeCun normal initialization\"**")
+    st.write("**3. The input features must be standardized**")
+
+    st.subheader("Pros")
+    st.write("1. Avoid the Vanishing Gradient Problem\nBecause of the self-normalization effect, the vanishing/exploding gradient problem is eliminated.")
+    st.write("2. Better Performance\nThe SELU function performs significantly better than other activation functions.")
+
+    st.subheader("Cons")
+    st.write("1. Unguaranteed Self-Normalization\nThe self-normalization effect of SELU is only guaranteed under certain conditions.")
+    
