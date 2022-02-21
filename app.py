@@ -28,7 +28,7 @@ def plot_function(func, title, alpha=None):
 
     return fig
 
-def plot_function_derivative(func, title, alpha=None):
+def plot_function_derivative(func, title):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=z, y=derivative(func, z), mode='lines', line=dict(color='red', width=3)))
     fig.update_layout(title = title, xaxis_title='Z', width=700, height=400,
@@ -41,7 +41,7 @@ def plot_function_derivative(func, title, alpha=None):
 
 st.title('Activation Functions')
 
-activation_function = st.selectbox('Choose an activation function', ['None', 'Logistic (Sigmoid) Function', 'Hyperbolic Tangent (Tanh) Function', 'ReLU Function', 'LeakyReLU Function', 'Variants of LeakyReLU'])
+activation_function = st.selectbox('Choose an activation function', ['None', 'Logistic (Sigmoid) Function', 'Hyperbolic Tangent (Tanh) Function', 'ReLU Function', 'LeakyReLU Function', 'Variants of LeakyReLU', 'Exponential Linear Unit'])
 
 ## Logistic Function
 if activation_function == 'Logistic (Sigmoid) Function':
@@ -127,7 +127,7 @@ if activation_function == 'ReLU Function':
     st.header('Rectified Linear Unit (ReLU) Function')
 
     st.subheader('Description')
-    st.write('It is a piecewise linear function with two linear pieces that will output the input directly is it is positive, otherwise, it will output zero.')
+    st.write('It is a piecewise linear function with two linear pieces that will output the input directly is it is positive (identity function), otherwise, it will output zero.')
     st.markdown('$$ReLU(z) = max(0, z)$$')
     st.write('It has become the default activation function for many neural netowrks because it is easier to train and achieves better performance.')
 
@@ -151,6 +151,7 @@ if activation_function == 'ReLU Function':
 
     st.subheader('Cons')
     st.write("1. Dying ReLUs\n- A problem where ReLU neurons become inactive and only output 0 for any input.\n- This usually happens when the weighted sum of the inputs for all training examples is negative, coupled with a large learning rate.\n- This causes the ReLU function to only output zeros and gradient descent algorithm can not affect it anymore.\n- One of the explanation of this phenomenon is using symmetirc weight distributions to initialize weights and biases.")
+    st.write("2. Not differentiable at 0.\nAn abrupt change in the slope causes gradient descent to bounce around.")
 
 
 ## LeakyReLU Function
@@ -179,6 +180,7 @@ if activation_function == "LeakyReLU Function":
         st.write('- Notice that the output of the LeakyReLU function is never a true zero for negative inputs, which helps avoid the dying ReLUs problem.')
         st.write('- The value α is a hyperparameter that defines how much the function leaks.')
         st.write('- α represents the slope of the function when the input is negative.')
+        st.write('- The value of α is usually between 0.1 and 0.3.')
     
     st.subheader('Derivative')
     st.markdown(r'$$ LeakyRelu^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\{\alpha} & z<=0 \\\end{array}\right.$$')
@@ -187,11 +189,12 @@ if activation_function == "LeakyReLU Function":
     with st.expander('Plot Explanation'):
         st.write("- This plot will automatically change when you change the value of α from the above slider.")
         st.write("- Notice that the derivative of the function when the input is negative is equal to the value of α.")
-        st.write("- The derivative of the function is never a true zero for negative inputs.")
+        st.write("- The function has a nonzero gradient for negative inputs.")
     
     st.subheader("Pros")
-    st.write("1. Avoids the Dead ReLUs Problem\nBy allowing the function to have a small gradient when the input is negative, we ensure that the neuron never dies.")
-    st.write("2. Better Performance\n The LeakyReLU function along with its variants almost always outperforms the standard ReLU.")
+    st.write("1. Alleviate the Vanishing Gradient Problem")
+    st.write("2. Avoids the Dead ReLUs Problem\nBy allowing the function to have a small gradient when the input is negative, we ensure that the neuron never dies.")
+    st.write("3. Better Performance\n The LeakyReLU function along with its variants almost always outperforms the standard ReLU.")
 
 ## Variants of LeakyReLU
 if activation_function == 'Variants of LeakyReLU':
@@ -202,3 +205,50 @@ if activation_function == 'Variants of LeakyReLU':
     st.title('Parametric LeakyReLU (PReLU)')
     st.write('In this variant, the value of α is a trainable (learnable) parameter rather than a hyperparameter.')
     st.write('In other words, the backpropagation algorithm can tweak its value like any other model parameter.')
+
+## Exponential Linear Unit
+if activation_function == 'Exponential Linear Unit':
+    st.title('Exponential Linear Unit (ELU)')
+
+    st.subheader('Description')
+    st.markdown(r'$$ ELU_{\alpha}(z)= \left\{\begin{array}{ll}z & z>0 \\{\alpha}(exp(z)-1) & z<=0 \\\end{array}\right.$$')
+
+    st.write('Similar to the ReLU function, ELU will output the input directly if it is positive.')
+    st.write('However, ELU\'s output is negative for negative inputs depending on the value of α')
+
+    st.subheader('Plot')
+
+    with st.form('leakage'):
+        alpha = st.slider('α Value', 0.0, 1.0, 0.2)
+        st.form_submit_button('Apply Changes')
+
+    def elu(z, alpha=alpha):
+        return np.where(z < 0, alpha * (np.exp(z) - 1), z)
+
+    elu_fig = plot_function(elu, title="Exponential Linear Unit (ELU) Function", alpha=alpha)
+    st.plotly_chart(elu_fig)
+
+    with st.expander('Plot Explanation'):
+        st.write("- This plot will automatically change when you change the value of α from the above slider.")
+        st.write('- Similar to LeakyReLU, the output of the  function is never a true zero for negative inputs, which helps avoid the dying ReLUs problem.')
+        st.write('- The value of α is usually set to 1, or chosen in the range of [0.1 and 0.3].')
+        st.write('- If the value of α is 1, the function is smooth everywhere (easier optimization).')
+    
+    st.subheader('Derivative')
+    st.markdown(r'$$ ELU^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\{\alpha}*exp(z) & z<=0 \\\end{array}\right.$$')
+
+    elu_der_fig = plot_function_derivative(elu, title='Derivative of ELU')
+    st.plotly_chart(elu_der_fig)
+
+    with st.expander('Plot Explanation'):
+        st.write("- This plot will automatically change when you change the value of α from the above slider.")
+        st.write("- The function has a nonzero gradient for negative inputs.")
+    
+    st.subheader('Pros')
+    st.write("1. Alleviate the Vanishing Gradient Problem")
+    st.write("2. Avoids the Dead ReLUs Problem")
+    st.write("3. Faster Convergence\nWhen the value of α equals 1, the function is smooth everywhere, which speed up gradient descent.")
+    st.write("4. Better Performance.\n The ELU function outperforms most other ReLU variants with reduced training time.")
+
+    st.subheader("Cons")
+    st.write("1. Computationally Expensive\nBecause it uses the exponential function, the ELU is slower to compute than other variants of ReLU.")
