@@ -15,25 +15,33 @@ def logistic(z):
 def relu(z):
     return np.maximum(0, z)
 
-def plot_function(func, title):
+def plot_function(func, title, alpha=None):
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=z, y=func(z), mode='lines', line=dict(color='firebrick', width=2)))
+    if alpha:
+        fig.add_trace(go.Scatter(x=z, y=func(z, alpha=alpha), mode='lines', line=dict(color='red', width=3)))
+    else:
+        fig.add_trace(go.Scatter(x=z, y=func(z), mode='lines', line=dict(color='red', width=3)))
     fig.update_layout(title = title, xaxis_title='Z',width=700, height=400,
                             font=dict(family="Courier New, monospace",size=16,color="White"), margin=dict(t=30, b=0, l=0, r=0))
+    fig.update_xaxes(zeroline=True, zerolinewidth=3, zerolinecolor='violet')
+    fig.update_yaxes(zeroline=True, zerolinewidth=3, zerolinecolor='violet')
+
     return fig
 
-def plot_function_derivative(func, title):
+def plot_function_derivative(func, title, alpha=None):
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=z, y=derivative(func, z), mode='lines', line=dict(color='firebrick', width=2)))
+    fig.add_trace(go.Scatter(x=z, y=derivative(func, z), mode='lines', line=dict(color='red', width=3)))
     fig.update_layout(title = title, xaxis_title='Z', width=700, height=400,
                             font=dict(family="Courier New, monospace",size=16,color="White"), margin=dict(t=30, b=0, l=0, r=0))
+    fig.update_xaxes(zeroline=True, zerolinewidth=3, zerolinecolor='violet')
+    fig.update_yaxes(zeroline=True, zerolinewidth=3, zerolinecolor='violet')
     return fig
 #########################################
 
 
 st.title('Activation Functions')
 
-activation_function = st.selectbox('Choose an activation function', ['None', 'Logistic (Sigmoid) Function', 'Hyperbolic Tangent (Tanh) Function', 'ReLU Function'])
+activation_function = st.selectbox('Choose an activation function', ['None', 'Logistic (Sigmoid) Function', 'Hyperbolic Tangent (Tanh) Function', 'ReLU Function', 'LeakyReLU Function'])
 
 ## Logistic Function
 if activation_function == 'Logistic (Sigmoid) Function':
@@ -143,3 +151,44 @@ if activation_function == 'ReLU Function':
 
     st.subheader('Cons')
     st.write("1. Dying ReLUs\n- A problem where ReLU neurons become inactive and only output 0 for any input.\n- This usually happens when the weighted sum of the inputs for all training examples is negative, coupled with a large learning rate.\n- This causes the ReLU function to only output zeros and gradient descent algorithm can not affect it anymore.\n- One of the explanation of this phenomenon is using symmetirc weight distributions to initialize weights and biases.")
+
+
+## LeakyReLU Function
+if activation_function == "LeakyReLU Function":
+    st.title('Leaky ReLU Function')
+
+    st.subheader('Description')
+    st.write('A variant of the ReLU function that solves the dying ReLUs problem.')
+    st.markdown(r'$LeakyReLU_{\alpha}(z) = max({\alpha}z, z)$')
+    st.write('It will output the input directly if it is positive, but it will output (α * input) if it is negative.')
+    st.write('This will ensure that the LeakyReLU function never dies.')
+
+    st.subheader('Plot')
+    with st.form('leakage'):
+        alpha = st.slider('α Value', 0.0, 1.0, 0.2)
+        st.form_submit_button('Apply Changes')
+
+    def leaky_relu(z, alpha=alpha):
+        return np.maximum(alpha*z, z)
+
+    leaky_fig = plot_function(leaky_relu, title="LeakyReLU Function", alpha=alpha)
+    st.plotly_chart(leaky_fig)
+
+    with st.expander('Plot Explanation'):
+        st.write("- This plot will automatically change when you change the value of α from the above slider.")
+        st.write('- Notice that the output of the LeakyReLU function is never a true zero for negative inputs, which helps avoid the dying ReLUs problem.')
+        st.write('- The value α is a hyperparameter that defines how much the function leaks.')
+        st.write('- α represents the slope of the function when the input is negative.')
+    
+    st.subheader('Derivative')
+    st.markdown(r'$$ LeakyRelu^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\{\alpha} & z<=0 \\\end{array}\right.$$')
+    leaky_der_fig = plot_function_derivative(leaky_relu, title="Derivative of the LeakyReLU Function")
+    st.plotly_chart(leaky_der_fig)
+    with st.expander('Plot Explanation'):
+        st.write("- This plot will automatically change when you change the value of α from the above slider.")
+        st.write("- Notice that the derivative of the function when the input is negative is equal to the value of α.")
+        st.write("- The derivative of the function is never a true zero for negative inputs.")
+    
+    st.subheader("Pros")
+    st.write("1. Avoids the Dead ReLUs Problem\nBy allowing the function to have a small gradient when the input is negative, we ensure that the neuron never dies.")
+    st.write("2. Better Performance\n The LeakyReLU function along with its variants almost always outperforms the standard ReLU.")
