@@ -182,7 +182,7 @@ if activation_function == 'Exponential Linear Unit Function':
     st.title('Exponential Linear Unit (ELU)')
 
     st.subheader('Description')
-    st.markdown(r'$$ ELU_{\alpha}(z)= \left\{\begin{array}{ll}z & z>0 \\{\alpha}(exp(z)-1) & z<=0 \\\end{array}\right.$$')
+    st.markdown(r'$$ELU_{\alpha}(z)= \left\{\begin{array}{ll}z & z>0 \\{\alpha}(exp(z)-1) & z<=0 \\\end{array}\right.$$')
 
     st.write('Similar to the ReLU function, ELU will output the input directly if it is positive (identity function).')
     st.write('However, ELU\'s output is negative for negative inputs depending on the value of α')
