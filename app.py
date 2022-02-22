@@ -1,63 +1,23 @@
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
-from scipy.special import erfc
+
+from utility import derivative, logistic, relu, elu, selu_alpha, selu_scale, selu, plot_function, plot_function_derivative
 
 ########################################
 # Utility Code
 z = np.linspace(-8,8,200)
-
-def derivative(f, z, eps=0.000001):
-    return (f(z + eps) - f(z - eps))/(2 * eps)
-
-def logistic(z):
-    return 1 / (1 + np.exp(-z))
-
-def relu(z):
-    return np.maximum(0, z)
-
-
-alpha_0_1 = -np.sqrt(2 / np.pi) / (erfc(1/np.sqrt(2)) * np.exp(1/2) - 1)
-scale_0_1 = (1 - erfc(1 / np.sqrt(2)) * np.sqrt(np.e)) * np.sqrt(2 * np.pi) * (2 * erfc(np.sqrt(2))*np.e**2 + np.pi*erfc(1/np.sqrt(2))**2*np.e - 2*(2+np.pi)*erfc(1/np.sqrt(2))*np.sqrt(np.e)+np.pi+2)**(-1/2)
-
-def elu(z, alpha=1):
-    return np.where(z < 0, alpha * (np.exp(z) - 1), z)
-
-def selu(z, scale=scale_0_1, alpha=alpha_0_1):
-    return scale * elu(z, alpha)
-
-def plot_function(func, title, alpha=None):
-    fig = go.Figure()
-    if alpha:
-        fig.add_trace(go.Scatter(x=z, y=func(z, alpha=alpha), mode='lines', line=dict(color='red', width=3)))
-    else:
-        fig.add_trace(go.Scatter(x=z, y=func(z), mode='lines', line=dict(color='red', width=3)))
-    fig.update_layout(title = title, xaxis_title='Z',width=700, height=400,
-                            font=dict(family="Courier New, monospace",size=16,color="White"), margin=dict(t=30, b=0, l=0, r=0))
-    fig.update_xaxes(zeroline=True, zerolinewidth=3, zerolinecolor='violet')
-    fig.update_yaxes(zeroline=True, zerolinewidth=3, zerolinecolor='violet')
-
-    return fig
-
-def plot_function_derivative(func, title):
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=z, y=derivative(func, z), mode='lines', line=dict(color='red', width=3)))
-    fig.update_layout(title = title, xaxis_title='Z', width=700, height=400,
-                            font=dict(family="Courier New, monospace",size=16,color="White"), margin=dict(t=30, b=0, l=0, r=0))
-    fig.update_xaxes(zeroline=True, zerolinewidth=3, zerolinecolor='violet')
-    fig.update_yaxes(zeroline=True, zerolinewidth=3, zerolinecolor='violet')
-    return fig
 #########################################
 
 
 st.title('Activation Functions')
 
-activation_function = st.selectbox('Choose an activation function', ['None', 'Logistic (Sigmoid) Function', 'Hyperbolic Tangent (Tanh) Function', 'ReLU Function', 'LeakyReLU Function', 'Variants of LeakyReLU', 'Exponential Linear Unit', 'SELU'])
+activation_function = st.selectbox('Choose an activation function', ['None', 'Logistic (Sigmoid) Function', 'Hyperbolic Tangent (Tanh) Function', 'ReLU Function', 'LeakyReLU Function', 'Variants of LeakyReLU Function', 'Exponential Linear Unit Function', 'SELU Function'])
 
 ## Logistic Function
 if activation_function == 'Logistic (Sigmoid) Function':
 
-    st.header('Logistic Function')
+    st.header('Logistic (Sigmoid) Function')
 
     st.subheader('Description')
     st.write('It is a sigmoid function with a characteristic "S"-shaped curve.')
@@ -90,8 +50,8 @@ if activation_function == 'Logistic (Sigmoid) Function':
     st.write('1. The logistic function introduces non-linearity into the network which allows it to solve more complex problems than linear activation functions.\n2. It is continuous and differentiable everywhere.\n3. Because its output is between 0 and 1, it is very common to use in the output layer in binary classification problems.')
 
     st.subheader('Cons')
-    st.write("1. Limited Sensitivity\nThe logistic function saturates across most of its domain. It is only sensitive to inputs around its midpoint 0.5.")
-    st.write("2. Vanishing Gradients in Deep Neural Networks\nBecause the logistic function can get easily saturated with large inputs, its gradient gets very close to zero. This causes the gradients to get smaller and smaller as backpropagation progresses down to the lower layers of the network. Eventually, the lower layers' weights receive very small updates and never converge to their optimal values.")
+    st.write("1. Limited Sensitivity\n- The logistic function saturates across most of its domain.\n- It is only sensitive to inputs around its midpoint 0.5.")
+    st.write("2. Vanishing Gradients in Deep Neural Networks\n- Because the logistic function can get easily saturated with large inputs, its gradient gets very close to zero. This causes the gradients to get smaller and smaller as backpropagation progresses down to the lower layers of the network.\n- Eventually, the lower layers' weights receive very small updates and never converge to their optimal values.")
 
 ## Tanh Function
 if activation_function == 'Hyperbolic Tangent (Tanh) Function':
@@ -129,7 +89,7 @@ if activation_function == 'Hyperbolic Tangent (Tanh) Function':
 
     st.subheader('Cons')
     st.write("1. Limited Sensitivity\nThe tanh function saturates across most of its domain. It is only sensitive to inputs around its midpoint 0.")
-    st.write("2. Vanishing Gradients in Deep Neural Networks\nBecause the tanh function can get easily saturated with large inputs, its gradient gets very close to zero. This causes the gradients to get smaller and smaller as backpropagation progresses down to the lower layers of the network. Eventually, the lower layers' weights receive very small updates and never converge to their optimal values.")
+    st.write("2. Vanishing Gradients in Deep Neural Networks\n- Because the tanh function can get easily saturated with large inputs, its gradient gets very close to zero.\n- This causes the gradients to get smaller and smaller as backpropagation progresses down to the lower layers of the network.\n- Eventually, the lower layers' weights receive very small updates and never converge to their optimal values.")
 
     st.markdown("**Note**: the vanishing gradient problem is less severe with the tanh function because it has a mean of 0 (instead of 0.5 like the logistic function).")
 
@@ -161,8 +121,8 @@ if activation_function == 'ReLU Function':
     st.write("3. Avoid Vanishing Gradients\n- The ReLU function does not saturate for positive values which helps avoid the vanishing gradient problem.\n- Switching from the logistic (sigmoid) activation function to ReLU has helped revolutionize the field of deep learning.")
 
     st.subheader('Cons')
-    st.write("1. Dying ReLUs\n- A problem where ReLU neurons become inactive and only output 0 for any input.\n- This usually happens when the weighted sum of the inputs for all training examples is negative, coupled with a large learning rate.\n- This causes the ReLU function to only output zeros and gradient descent algorithm can not affect it anymore.\n- One of the explanation of this phenomenon is using symmetirc weight distributions to initialize weights and biases.")
-    st.write("2. Not differentiable at 0.\nAn abrupt change in the slope causes gradient descent to bounce around.")
+    st.write("1. Dying ReLUs\n- A problem where ReLU neurons become inactive and only output 0 for any input.\n- This usually happens when the weighted sum of the inputs for all training examples is negative, coupled with a large learning rate.\n- This causes the ReLU function to only output zeros and gradient descent algorithm can not affect it anymore.\n- One of the explanations of this phenomenon is using symmetirc weight distributions to initialize weights and biases.")
+    st.write("2. Not differentiable at 0.\n- An abrupt change in the slope causes gradient descent to bounce around.")
 
 
 ## LeakyReLU Function
@@ -172,11 +132,11 @@ if activation_function == "LeakyReLU Function":
     st.subheader('Description')
     st.write('A variant of the ReLU function that solves the dying ReLUs problem.')
     st.markdown(r'$LeakyReLU_{\alpha}(z) = max({\alpha}z, z)$')
-    st.write('It will output the input directly if it is positive, but it will output (α * input) if it is negative.')
+    st.write('It will output the input directly if it is positive (identity function), but it will output (α * input) if it is negative.')
     st.write('This will ensure that the LeakyReLU function never dies.')
 
     st.subheader('Plot')
-    with st.form('leakage'):
+    with st.sidebar.form('leakage'):
         alpha = st.slider('α Value', 0.0, 1.0, 0.2)
         st.form_submit_button('Apply Changes')
 
@@ -187,7 +147,7 @@ if activation_function == "LeakyReLU Function":
     st.plotly_chart(leaky_fig)
 
     with st.expander('Plot Explanation'):
-        st.write("- This plot will automatically change when you change the value of α from the above slider.")
+        st.write("- This plot will automatically change when you change the value of α from the sidebar slider.")
         st.write('- Notice that the output of the LeakyReLU function is never a true zero for negative inputs, which helps avoid the dying ReLUs problem.')
         st.write('- The value α is a hyperparameter that defines how much the function leaks.')
         st.write('- α represents the slope of the function when the input is negative.')
@@ -198,17 +158,17 @@ if activation_function == "LeakyReLU Function":
     leaky_der_fig = plot_function_derivative(leaky_relu, title="Derivative of the LeakyReLU Function")
     st.plotly_chart(leaky_der_fig)
     with st.expander('Plot Explanation'):
-        st.write("- This plot will automatically change when you change the value of α from the above slider.")
+        st.write("- This plot will automatically change when you change the value of α from the sidebar slider.")
         st.write("- Notice that the derivative of the function when the input is negative is equal to the value of α.")
         st.write("- The function has a nonzero gradient for negative inputs.")
     
     st.subheader("Pros")
     st.write("1. Alleviate the Vanishing Gradient Problem")
-    st.write("2. Avoids the Dead ReLUs Problem\nBy allowing the function to have a small gradient when the input is negative, we ensure that the neuron never dies.")
-    st.write("3. Better Performance\n The LeakyReLU function along with its variants almost always outperforms the standard ReLU.")
+    st.write("2. Avoids the Dead ReLUs Problem\n- By allowing the function to have a small gradient when the input is negative, we ensure that the neuron never dies.")
+    st.write("3. Better Performance\n- The LeakyReLU function along with its variants almost always outperform the standard ReLU.")
 
 ## Variants of LeakyReLU
-if activation_function == 'Variants of LeakyReLU':
+if activation_function == 'Variants of LeakyReLU Function':
     st.title("Randomized LeakyReLU (RReLU)")
     st.write('In this variant, the value of α is picked randomly in a given range during training, and is fixed to an average during testing.')
     st.write('In addition to having the same advantages of the LeakyReLU, it also has a slight regularization effect (reduce overfitting).')
@@ -218,18 +178,18 @@ if activation_function == 'Variants of LeakyReLU':
     st.write('In other words, the backpropagation algorithm can tweak its value like any other model parameter.')
 
 ## Exponential Linear Unit
-if activation_function == 'Exponential Linear Unit':
+if activation_function == 'Exponential Linear Unit Function':
     st.title('Exponential Linear Unit (ELU)')
 
     st.subheader('Description')
     st.markdown(r'$$ ELU_{\alpha}(z)= \left\{\begin{array}{ll}z & z>0 \\{\alpha}(exp(z)-1) & z<=0 \\\end{array}\right.$$')
 
-    st.write('Similar to the ReLU function, ELU will output the input directly if it is positive.')
+    st.write('Similar to the ReLU function, ELU will output the input directly if it is positive (identity function).')
     st.write('However, ELU\'s output is negative for negative inputs depending on the value of α')
 
     st.subheader('Plot')
 
-    with st.form('leakage'):
+    with st.sidebar.form('leakage'):
         alpha = st.slider('α Value', 0.0, 1.0, 0.2)
         st.form_submit_button('Apply Changes')
 
@@ -240,10 +200,10 @@ if activation_function == 'Exponential Linear Unit':
     st.plotly_chart(elu_fig)
 
     with st.expander('Plot Explanation'):
-        st.write("- This plot will automatically change when you change the value of α from the above slider.")
+        st.write("- This plot will automatically change when you change the value of α from the sidebar slider.")
         st.write('- Similar to LeakyReLU, the output of the  function is never a true zero for negative inputs, which helps avoid the dying ReLUs problem.')
         st.write('- The value of α is usually set to 1, or chosen in the range of [0.1 and 0.3].')
-        st.write('- If the value of α is 1, the function is smooth everywhere (easier optimization).')
+        st.write('- If α is equal to 1, the function is smooth everywhere (easier optimization).')
     
     st.subheader('Derivative')
     st.markdown(r'$$ ELU^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\{\alpha}*exp(z) & z<=0 \\\end{array}\right.$$')
@@ -252,20 +212,20 @@ if activation_function == 'Exponential Linear Unit':
     st.plotly_chart(elu_der_fig)
 
     with st.expander('Plot Explanation'):
-        st.write("- This plot will automatically change when you change the value of α from the above slider.")
+        st.write("- This plot will automatically change when you change the value of α from the sidebar slider.")
         st.write("- The function has a nonzero gradient for negative inputs.")
     
     st.subheader('Pros')
     st.write("1. Alleviate the Vanishing Gradient Problem")
     st.write("2. Avoids the Dead ReLUs Problem")
-    st.write("3. Faster Convergence\nWhen the value of α equals 1, the function is smooth everywhere, which speed up gradient descent.")
-    st.write("4. Better Performance.\n The ELU function outperforms most other ReLU variants with reduced training time.")
+    st.write("3. Faster Convergence\n- When the value of α equals 1, the function is smooth everywhere, which speeds up gradient descent.")
+    st.write("4. Better Performance.\n- The ELU function outperforms most other ReLU variants with reduced training time.")
 
     st.subheader("Cons")
-    st.write("1. Computationally Expensive\nBecause it uses the exponential function, the ELU is slower to compute than other variants of ReLU.")
+    st.write("1. Computationally Expensive\n- Because it uses the exponential function, the ELU is slower to compute than other variants of ReLU.")
 
 ## SELU
-if activation_function == 'SELU':
+if activation_function == 'SELU Function':
     st.title('Scaled ELU (SELU)')
 
     st.subheader('Description')
@@ -276,8 +236,8 @@ if activation_function == 'SELU':
     st.write("Under certain conditions, using the SELU function will cause the neural network to self-normalize.")
 
     st.write("The values of λ and α are predetermined by the authors of the function and you do not need to tune them.")
-    st.write(r"$α {\approx} %f$"%alpha_0_1)
-    st.write(r"$λ {\approx} %f$"%scale_0_1)
+    st.write(r"$α {\approx} %f$"%selu_alpha)
+    st.write(r"$λ {\approx} %f$"%selu_alpha)
 
     st.subheader('Plot')
     selu_fig = plot_function(selu, title='Scaled ELU (SELU) Function')
@@ -300,13 +260,12 @@ if activation_function == 'SELU':
     st.write("However, for self-normalization to take place, there are certain conditions that need to be satisfied.")
     st.markdown("**1. The network's architecure must be sequential**")
     st.write("Self-normalization is not guaranteed for different architectures such as RNNs, or architectures with skip connections for example.")
-    st.write("**2. The network parameters must be initialized using \"LeCun normal initialization\"**")
+    st.write("**2. The network parameters (weights and biases) must be initialized using \"LeCun normal initialization\"**")
     st.write("**3. The input features must be standardized**")
 
     st.subheader("Pros")
-    st.write("1. Avoid the Vanishing Gradient Problem\nBecause of the self-normalization effect, the vanishing/exploding gradient problem is eliminated.")
-    st.write("2. Better Performance\nThe SELU function performs significantly better than other activation functions.")
+    st.write("1. Avoid the Vanishing Gradient Problem\n- Because of the self-normalization effect, the vanishing/exploding gradient problem is eliminated.")
+    st.write("2. Better Performance\n- The SELU function performs significantly better than other activation functions.")
 
     st.subheader("Cons")
-    st.write("1. Unguaranteed Self-Normalization\nThe self-normalization effect of SELU is only guaranteed under certain conditions.")
-    
+    st.write("1. Unguaranteed Self-Normalization\n- The self-normalization effect of SELU is only guaranteed under certain conditions.")
