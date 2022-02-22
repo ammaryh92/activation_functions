@@ -33,7 +33,7 @@ if activation_function == 'Logistic (Sigmoid) Function':
      font=dict(family="Montserrat", size=16, color="#1F8123"),
         align="center",arrowhead=2, arrowsize=1, arrowwidth=2, arrowcolor="#A835E1", ax=0, ay=-30,)
     st.plotly_chart(logistic_fig)
-    with st.beta_expander('Plot Explanation'):
+    with st.expander('Plot Explanation'):
         st.write('- The logistic function saturates as the inputs become larger (either positive or negative).')
         st.write('- For large positive and negative values, the function gets asymptotically close to 1 and 0, respectively.')
         st.write('- When the function saturates, its gradient becomes very close to zero, which slows down learning.')
