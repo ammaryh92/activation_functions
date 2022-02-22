@@ -107,7 +107,7 @@ if activation_function == 'ReLU Function':
     st.plotly_chart(relu_fig)
 
     st.subheader('Derivative')
-    st.markdown(r'$$ Relu^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\0 & z<=0 \\\end{array}\right.$$')
+    st.markdown(r'$$Relu^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\0 & z<=0 \\\end{array}\right.$$')
     st.text("")
     relu_der_fig = plot_function_derivative(relu, title='Derivative of the ReLU Function')
     st.plotly_chart(relu_der_fig)
@@ -154,7 +154,7 @@ if activation_function == "LeakyReLU Function":
         st.write('- The value of α is usually between 0.1 and 0.3.')
     
     st.subheader('Derivative')
-    st.markdown(r'$$ LeakyRelu^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\{\alpha} & z<=0 \\\end{array}\right.$$')
+    st.markdown(r'$$LeakyRelu^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\{\alpha} & z<=0 \\\end{array}\right.$$')
     leaky_der_fig = plot_function_derivative(leaky_relu, title="Derivative of the LeakyReLU Function")
     st.plotly_chart(leaky_der_fig)
     with st.beta_expander('Plot Explanation'):
