@@ -206,7 +206,7 @@ if activation_function == 'Exponential Linear Unit Function':
         st.write('- If α is equal to 1, the function is smooth everywhere (easier optimization).')
     
     st.subheader('Derivative')
-    st.markdown(r'$$ ELU^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\{\alpha}*exp(z) & z<=0 \\\end{array}\right.$$')
+    st.markdown(r'$$ELU^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\{\alpha}*exp(z) & z<=0 \\\end{array}\right.$$')
 
     elu_der_fig = plot_function_derivative(elu, title='Derivative of ELU')
     st.plotly_chart(elu_der_fig)
