@@ -231,7 +231,7 @@ if activation_function == 'SELU Function':
     st.subheader('Description')
     st.write('The SELU function is a scaled variant of the ELU function.')
 
-    st.markdown(r'$$ SELU_{\alpha}(z)= {\lambda}\left\{\begin{array}{ll}z & z>0 \\{\alpha}(exp(z)-1) & z<=0 \\\end{array}\right.$$')
+    st.markdown(r'$$SELU_{\alpha}(z)= {\lambda}\left\{\begin{array}{ll}z & z>0 \\{\alpha}(exp(z)-1) & z<=0 \\\end{array}\right.$$')
 
     st.write("Under certain conditions, using the SELU function will cause the neural network to self-normalize.")
 
@@ -248,7 +248,7 @@ if activation_function == 'SELU Function':
         st.write("- Similar to LeakyReLU, the output of the  function is never a true zero for negative inputs, which helps avoid the dying ReLUs problem.")
     
     st.subheader("Derivative")
-    st.markdown(r'$$ SELU^{\prime}(z)= {\lambda}\left\{\begin{array}{ll}1 & z>0 \\{\alpha} * exp(z) & z<=0 \\\end{array}\right.$$')
+    st.markdown(r'$$SELU^{\prime}(z)= {\lambda}\left\{\begin{array}{ll}1 & z>0 \\{\alpha} * exp(z) & z<=0 \\\end{array}\right.$$')
 
     st.text("")
 
