@@ -43,7 +43,7 @@ if activation_function == 'Logistic (Sigmoid) Function':
     st.text("")
     logistic_der_fig = plot_function_derivative(logistic, title='Derivative of the Logistic Function')
     st.plotly_chart(logistic_der_fig)
-    with st.expander('Plot Explanation'):
+    with st.beta_expander('Plot Explanation'):
         st.write('Notice that the derivative of the logistic function gets very close to zero for large positive and negative inputs.')
 
     st.subheader('Pros')
@@ -71,7 +71,7 @@ if activation_function == 'Hyperbolic Tangent (Tanh) Function':
      font=dict(family="Montserrat", size=16, color="#1F8123"),
         align="center",arrowhead=2, arrowsize=1, arrowwidth=2, arrowcolor="#A835E1", ax=0, ay=-30,)
     st.plotly_chart(tanh_fig)
-    with st.expander('Plot Explanation'):
+    with st.beta_expander('Plot Explanation'):
         st.write('- The tanh function saturates as the inputs become larger (either positive or negative).')
         st.write('- For large positive and negative values, the function gets asymptotically close to 1 and -1, respectively.')
         st.write('- When the function saturates, its gradient becomes very close to zero, which slows down learning.')
@@ -81,7 +81,7 @@ if activation_function == 'Hyperbolic Tangent (Tanh) Function':
     st.text("")
     tanh_der_fig = plot_function_derivative(np.tanh, title='Derivative of the Tanh Function')
     st.plotly_chart(tanh_der_fig)
-    with st.expander('Plot Explanation'):
+    with st.beta_expander('Plot Explanation'):
         st.write('Notice that the derivative of the tanh function gets very close to zero for large positive and negative inputs.')
     
     st.subheader('Pros')
@@ -111,7 +111,7 @@ if activation_function == 'ReLU Function':
     st.text("")
     relu_der_fig = plot_function_derivative(relu, title='Derivative of the ReLU Function')
     st.plotly_chart(relu_der_fig)
-    with st.expander('Plot Explanation'):
+    with st.beta_expander('Plot Explanation'):
         st.write('- The derivative of the ReLU function is 1 for z > 0, and 0 for z < 0.')
         st.write('- The ReLU function is not differentiable at z = 0.')
 
@@ -146,7 +146,7 @@ if activation_function == "LeakyReLU Function":
     leaky_fig = plot_function(leaky_relu, title="LeakyReLU Function", alpha=alpha)
     st.plotly_chart(leaky_fig)
 
-    with st.expander('Plot Explanation'):
+    with st.beta_expander('Plot Explanation'):
         st.write("- This plot will automatically change when you change the value of α from the sidebar slider.")
         st.write('- Notice that the output of the LeakyReLU function is never a true zero for negative inputs, which helps avoid the dying ReLUs problem.')
         st.write('- The value α is a hyperparameter that defines how much the function leaks.')
@@ -157,7 +157,7 @@ if activation_function == "LeakyReLU Function":
     st.markdown(r'$$ LeakyRelu^{\prime}(z)= \left\{\begin{array}{ll}1 & z>0 \\{\alpha} & z<=0 \\\end{array}\right.$$')
     leaky_der_fig = plot_function_derivative(leaky_relu, title="Derivative of the LeakyReLU Function")
     st.plotly_chart(leaky_der_fig)
-    with st.expander('Plot Explanation'):
+    with st.beta_expander('Plot Explanation'):
         st.write("- This plot will automatically change when you change the value of α from the sidebar slider.")
         st.write("- Notice that the derivative of the function when the input is negative is equal to the value of α.")
         st.write("- The function has a nonzero gradient for negative inputs.")
@@ -199,7 +199,7 @@ if activation_function == 'Exponential Linear Unit Function':
     elu_fig = plot_function(elu, title="Exponential Linear Unit (ELU) Function", alpha=alpha)
     st.plotly_chart(elu_fig)
 
-    with st.expander('Plot Explanation'):
+    with st.beta_expander('Plot Explanation'):
         st.write("- This plot will automatically change when you change the value of α from the sidebar slider.")
         st.write('- Similar to LeakyReLU, the output of the  function is never a true zero for negative inputs, which helps avoid the dying ReLUs problem.')
         st.write('- The value of α is usually set to 1, or chosen in the range of [0.1 and 0.3].')
@@ -211,7 +211,7 @@ if activation_function == 'Exponential Linear Unit Function':
     elu_der_fig = plot_function_derivative(elu, title='Derivative of ELU')
     st.plotly_chart(elu_der_fig)
 
-    with st.expander('Plot Explanation'):
+    with st.beta_expander('Plot Explanation'):
         st.write("- This plot will automatically change when you change the value of α from the sidebar slider.")
         st.write("- The function has a nonzero gradient for negative inputs.")
     
@@ -243,7 +243,7 @@ if activation_function == 'SELU Function':
     selu_fig = plot_function(selu, title='Scaled ELU (SELU) Function')
     st.plotly_chart(selu_fig)
 
-    with st.expander('Plot Explanation'):
+    with st.beta_expander('Plot Explanation'):
         st.write("- If the input is positive, the function will return (λ * input).")
         st.write("- Similar to LeakyReLU, the output of the  function is never a true zero for negative inputs, which helps avoid the dying ReLUs problem.")
     
