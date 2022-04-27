@@ -25,7 +25,7 @@ if activation_function == 'Logistic (Sigmoid) Function':
     st.write('The output of the logistic (sigmoid) function is always between 0 and 1.')   
 
     st.subheader('Plot')
-    logistic_fig  = plot_function(logistic, title='Logistic (Sigmoid) Activation Functoin')
+    logistic_fig  = plot_function(logistic, title='Logistic (Sigmoid) Activation Function')
     logistic_fig.add_annotation(x=7, y=1, text='<b>Saturation</b>', showarrow=True,
      font=dict(family="Montserrat", size=16, color="#1F8123"),
         align="center",arrowhead=2, arrowsize=1, arrowwidth=2, arrowcolor="#A835E1", ax=-20, ay=30,)
